@@ -26,14 +26,10 @@ namespace tobybot
         {
             _client = new DiscordSocketClient();
 
-            //Hook into log event and write it out to the console
             _client.Log += LogAsync;
-
-            //Hook into the client ready event
             _client.Ready += ReadyAsync;
-
-            //Hook into the message received event, this is how we handle the hello world example
             _client.MessageReceived += MessageReceivedAsync;
+            _client.UserJoined += UserJoinedAsync;
 
             //Create the configuration
             var _builder = new ConfigurationBuilder()
@@ -58,23 +54,78 @@ namespace tobybot
             return Task.CompletedTask;
         }
 
+        private Task UserJoinedAsync(SocketGuildUser user)
+        {
+            var welcomechan = user.Guild.GetChannel(568941228251545611);
+            if(welcomechan != null)
+            {
+                ITextChannel realchan = welcomechan as ITextChannel;
+
+                realchan.SendMessageAsync($"Hello, **{user.Username}**! Please be patient while our hamsters run a background check on you to ensure you aren't a DEA or FBI agent... or a snitch! :weed: :spy:");
+            }
+            return Task.CompletedTask;
+        }
         private Task ReadyAsync()
         {
             Console.WriteLine($"Connected as -> [{_client.CurrentUser}] :)");
             return Task.CompletedTask;
         }
 
-        //I wonder if there's a better way to handle commands (spoiler: there is :))
+        // This is called everytime a user sends a message!
         private async Task MessageReceivedAsync(SocketMessage message)
         {
-            //This ensures we don't loop things by responding to ourselves (as the bot)
+           var msg = message as SocketUserMessage;
+           var context = new SocketCommandContext(_client, msg);
+
+            // this will make sure the bot doesn't try to eat itself
             if (message.Author.Id == _client.CurrentUser.Id)
                 return;
 
+            await Task.Delay(0);
+
+            // checks if the message was sent to the poll channel
+            /*if(context.Message.Channel.Id == 566447876012769321)
+            {
+                var coolmsg = context.Message;
+
+                // this is so the reactions can be automatically added
+                IEmote up = new Emoji("👍");
+                IEmote down = new Emoji("👎");
+                await coolmsg.AddReactionsAsync(new[] {up, down});
+            }
+            
+            // old and buggy code. (for future references)
+            
             if (message.Content == ".hello")
             {
                 await message.Channel.SendMessageAsync("world!");
-            }  
+            }
+            if(message.Content == ";;welcome" && (message.Author.Id == 341394961100701696 || message.Author.Id == 246859318303916033))
+            {
+                Database.ChangeWelcomeChannel(context.Guild, context.Channel.Id.ToString());
+                await context.Channel.SendMessageAsync(":thumbsup: This is now the welcome channel.");
+            }*/
+            if(message.Content.StartsWith(";;verify "))
+            {
+                string idString = message.Content.Replace(";;verify ", "");
+                ulong realId;
+                if(ulong.TryParse(idString, out realId))
+                {
+                    var welcomechan = context.Guild.GetChannel(538627968986251296);
+                    var verifiedUser = context.Guild.GetUser(realId);
+                    if(welcomechan != null && verifiedUser != null)
+                    {
+                        var role = context.Guild.GetRole(568944460503711773);
+
+                        ITextChannel realchan = welcomechan as ITextChannel;
+                        await realchan.SendMessageAsync($"Welcome to {context.Guild.Name}, **{verifiedUser.Mention}**! Have fun and don't get caught :wink:");
+                    }
+                }
+                else
+                {
+                    await message.Channel.SendMessageAsync(":x: Failed to detect a user ID from your message.");
+                }
+            }
         }
     }
 }
