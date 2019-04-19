@@ -61,7 +61,7 @@ namespace tobybot
             {
                 ITextChannel realchan = welcomechan as ITextChannel;
 
-                realchan.SendMessageAsync($"Hello, **{user.Username}**! Please be patient while our hamsters run a background check on you to ensure you aren't a DEA or FBI agent... or a snitch! :weed: :spy:");
+                realchan.SendMessageAsync($":grinning: Hello, **{user.Username}**! Please be patient while our hamsters run a background check on you to ensure you aren't involved with the DEA or FBI! <:weed:568938819026681896> :spy:");
             }
             return Task.CompletedTask;
         }
@@ -81,9 +81,6 @@ namespace tobybot
             if (message.Author.Id == _client.CurrentUser.Id)
                 return;
 
-            await Task.Delay(0);
-
-            // checks if the message was sent to the poll channel
             /*if(context.Message.Channel.Id == 566447876012769321)
             {
                 var coolmsg = context.Message;
@@ -92,18 +89,6 @@ namespace tobybot
                 IEmote up = new Emoji("👍");
                 IEmote down = new Emoji("👎");
                 await coolmsg.AddReactionsAsync(new[] {up, down});
-            }
-            
-            // old and buggy code. (for future references)
-            
-            if (message.Content == ".hello")
-            {
-                await message.Channel.SendMessageAsync("world!");
-            }
-            if(message.Content == ";;welcome" && (message.Author.Id == 341394961100701696 || message.Author.Id == 246859318303916033))
-            {
-                Database.ChangeWelcomeChannel(context.Guild, context.Channel.Id.ToString());
-                await context.Channel.SendMessageAsync(":thumbsup: This is now the welcome channel.");
             }*/
             if(message.Content.StartsWith(";;verify "))
             {
@@ -116,7 +101,8 @@ namespace tobybot
                     if(welcomechan != null && verifiedUser != null)
                     {
                         var role = context.Guild.GetRole(568944460503711773);
-
+                        await verifiedUser.AddRoleAsync(role);
+                        await context.Message.DeleteAsync();
                         ITextChannel realchan = welcomechan as ITextChannel;
                         await realchan.SendMessageAsync($"Welcome to {context.Guild.Name}, **{verifiedUser.Mention}**! Have fun and don't get caught :wink:");
                     }
