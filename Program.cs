@@ -71,13 +71,11 @@ namespace tobybot
             return Task.CompletedTask;
         }
 
-        // This is called everytime a user sends a message!
         private async Task MessageReceivedAsync(SocketMessage message)
         {
-           var msg = message as SocketUserMessage;
-           var context = new SocketCommandContext(_client, msg);
+            var msg = message as SocketUserMessage;
+            var context = new SocketCommandContext(_client, msg);
 
-            // this will make sure the bot doesn't try to eat itself
             if (message.Author.Id == _client.CurrentUser.Id)
                 return;
 
@@ -92,6 +90,7 @@ namespace tobybot
             }*/
             if(message.Content.StartsWith(";;verify "))
             {
+                if(message.Author.Id != 246859318303916033) return;
                 string idString = message.Content.Replace(";;verify ", "");
                 ulong realId;
                 if(ulong.TryParse(idString, out realId))
@@ -101,15 +100,13 @@ namespace tobybot
                     if(welcomechan != null && verifiedUser != null)
                     {
                         var role = context.Guild.GetRole(568944460503711773);
+                        if(verifiedUser.Roles.Contains(role)) return;
+
                         await verifiedUser.AddRoleAsync(role);
                         await context.Message.DeleteAsync();
                         ITextChannel realchan = welcomechan as ITextChannel;
                         await realchan.SendMessageAsync($"Welcome to {context.Guild.Name}, **{verifiedUser.Mention}**! Have fun and don't get caught :wink:");
                     }
-                }
-                else
-                {
-                    await message.Channel.SendMessageAsync(":x: Failed to detect a user ID from your message.");
                 }
             }
         }
