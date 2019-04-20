@@ -61,7 +61,11 @@ namespace tobybot
             {
                 ITextChannel realchan = welcomechan as ITextChannel;
 
-                realchan.SendMessageAsync($":grinning: Hello, **{user.Username}**! Please be patient while our hamsters run a background check on you to ensure you aren't involved with the DEA or FBI! <:weed:568938819026681896> :spy:");
+                realchan.SendMessageAsync($":grinning: Hello, **{user.Username}**! " +
+                "Please be patient while our hamsters run a background check on you to ensure you " +
+                "aren't involved with the DEA or FBI! <:weed:568938819026681896> :spy:" +
+                "\n:clock3:We *highly* indorse you to introduce yourself while you wait." +
+                "Share with us your age, and what you ate for breakfast! Don't be shy :upside_down:");
             }
             return Task.CompletedTask;
         }
