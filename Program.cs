@@ -64,8 +64,9 @@ namespace tobybot
                 var role = user.Guild.GetRole(568944460503711773);
 
                 user.AddRoleAsync(role);
-                realchan.SendMessageAsync($":smile: Welcome to {user.Guild.Name}, **{user.Username}**! " +
-                "\nWe *highly* indorse you to introduce yourself :wink:");
+                
+                //realchan.SendMessageAsync($":smile: Welcome to {user.Guild.Name}, **{user.Username}**! " +
+                //"\nWe *highly* indorse you to introduce yourself :wink:");
             }
             return Task.CompletedTask;
         }
