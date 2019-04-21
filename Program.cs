@@ -57,7 +57,7 @@ namespace tobybot
         private Task UserJoinedAsync(SocketGuildUser user)
         {
             var welcomechan = user.Guild.GetChannel(568941228251545611);
-            if(welcomechan != null)
+            if(welcomechan != null && !user.IsBot)
             {
                 ITextChannel realchan = welcomechan as ITextChannel;
 
